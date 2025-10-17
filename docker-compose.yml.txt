@@ -1,0 +1,99 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    user: "1000:1000"
+    ports:
+      - "8080:80"
+    volumes:
+      - /mnt/secure:/srv               # your decrypted VeraCrypt files
+      - ./filebrowser/database:/database  # persistent config + user DB
+      - /mnt/storage:/srv/storage:rw             # new storage folder
+    command: ["--database", "/database/filebrowser.db", "--root", "/srv"]
+    restart: unless-stopped
+
+  resilio:
+    image: linuxserver/resilio-sync
+    container_name: resilio
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ~/docker/resilio/config:/config
+      - /mnt/secure:/sync   # this is your shared files area
+    ports:
+      - 8888:8888    # Web UI
+      - 55555:55555  # Sync port
+    restart: unless-stopped
+
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    hostname: pihole
+    network_mode: host
+    environment:
+      - TZ=Europe/Berlin
+      # Allow DNS from LAN + Tailscale subnets
+      - DNSMASQ_LISTENING=all
+      # Tell Pi-hole its LAN IP (helps binding/replies)
+      - FTLCONF_LOCAL_IPV4=192.168.178.69
+    volumes:
+      - ./pihole/etc-pihole:/etc/pihole
+      - ./pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    healthcheck:
+      test: ['CMD-SHELL','dig +retry=0 +time=1 @192.168.178.69 pi.hole || exit 1']
+      interval: 30s
+      timeout: 3s
+      retries: 3   
+    restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer/data:/data
+    restart: unless-stopped
+
+  glances:
+    image: nicolargo/glances:latest
+    container_name: glances
+    network_mode: host
+    pid: host
+    environment:
+      - GLANCES_OPT=-w --disable-webui
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=Europe/Berlin
+      - N8N_HOST=taylorspi.tailea056c.ts.net
+      - WEBHOOK_URL=https://taylorspi.tailea056c.ts.net
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=Taylor
+      - N8N_BASIC_AUTH_PASSWORD=Thn8n3371!
+      - N8N_SECURE_COOKIE=true
+      - N8N_PROXY_HOPS=1
+      - N8N_PROTOCOL=https
+    volumes:
+      - /home/taylo/docker/n8n:/home/node/.n8n
+    restart: unless-stopped
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    ports:
+      - "3001:3001"     # free port in your stack
+    volumes:
+      - /home/taylo/docker/uptime-kuma:/app/data
+    restart: unless-stopped
+
+
+

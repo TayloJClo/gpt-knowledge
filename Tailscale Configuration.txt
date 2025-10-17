@@ -1,0 +1,79 @@
+# 🛡️ Tailscale Configuration — TaylorsPi
+
+## 📋 Overview
+- **Hostname:** TaylorsPi
+- **Tailscale Version:** 1.88.3
+- **Backend State:** Running
+- **Operating System:** Linux (Debian 13 “Trixie”)
+- **Tailnet User:** taylorclothier@gmail.com
+- **Tailnet Name:** tailea056c.ts.net
+- **MagicDNS:** Enabled
+- **DNS Name:** taylorspi.tailea056c.ts.net
+- **Tailscale IPv4:** 100.108.200.53
+- **Tailscale IPv6:** fd7a:115c:ale0::b033:c835
+- **DERP Region:** fra (Frankfurt)
+- **Exit Node:** None (disabled)
+- **SSH over Tailscale:** Enabled (`sudo tailscale up --ssh` used)
+- **Key Expiry:** 2026-04-07T20:38:26Z
+
+---
+
+## 🌍 Connected Peers
+| Device | OS | IPv4 | DNS Name | Online |
+|--------|----|------|----------|--------|
+| **Tjs-PC** | Windows | 100.117.6.38 | tjs-pc.tailea056c.ts.net | ❌ Offline |
+| **iPad Pro 11 Gen 2** | iOS | 100.105.152.84 | ipad-pro-11-gen-2.tailea056c.ts.net | ✅ Online |
+| **iPhone 171** | iOS | 100.74.30.84 | iphone171.tailea056c.ts.net | ✅ Online |
+| **Taylor’s MacBook Pro** | macOS | 100.110.177.9 | taylors-macbook-pro.tailea056c.ts.net | ✅ Online |
+
+---
+
+## 🔐 Capabilities
+- File Sharing  
+- SSH Access  
+- Admin & Owner privileges  
+- Tailnet Lock support  
+- Appc Routes Storage  
+- Probe UDP Lifetime  
+- Taildrop enabled  
+
+### 🔐 HTTPS & Serve (updated)
+- **HTTPS Certificates:** Enabled
+- **Node URL:** https://taylorspi.tailea056c.ts.net/  *(tailnet only)*
+- **Serve mapping:**
+tailscale serve status
+https://taylorspi.tailea056c.ts.net
+ (tailnet only)
+|-- / proxy http://127.0.0.1:5678
+
+- **Note:** Always use the HTTPS root URL (no `:5678`). Traffic is end-to-end inside the tailnet via Tailscale Serve.
+
+### 🧩 n8n (NEW)
+- **UI:** https://taylorspi.tailea056c.ts.net/
+- **Backend:** Docker service `n8n` listening on `127.0.0.1:5678`
+- **Proxy awareness:** `N8N_SECURE_COOKIE=true`, `N8N_PROXY_HOPS=1`, `N8N_PROTOCOL=https`
+- **Auth:** Basic Auth enabled; encryption key set in Compose.
+
+---
+
+## 🧭 Notes
+- FileBrowser and other local services on TaylorsPi are reachable at: 
+  - http://taylorspi.tailea056c.ts.net:8080 
+  - or http://100.108.200.53:8080
+
+- **Home Assistant (NEW):**
+  - http://taylorspi.tailea056c.ts.net:8123
+  - or http://100.108.200.53:8123
+
+- Only authenticated Tailscale devices can connect.  
+- No router port forwarding or dynamic DNS needed.  
+- Ideal for secure access to services remotely.
+- Portainer on TaylorsPi:
+  - https://taylorspi.tailea056c.ts.net:9443
+  - (LAN alternative: https://192.168.178.69:9443)
+
+---
+
+✅ **Summary**
+TaylorsPi is fully integrated into the Tailscale network under the `tailea056c.ts.net` Tailnet.  
+Remote access to Docker-hosted services (like FileBrowser **and Home Assistant**) is safe and automatic across your devices.
