@@ -1,91 +1,72 @@
-# 🖥️ Raspberry Pi System Information (TaylorsPi)
+# System Information — TaylorsPi
 
 ## 🧩 System Overview
-- **Hostname:** TaylorsPi  
-- **Kernel:** Linux 6.12.47+rpt-rpi-v8  
-- **Architecture:** aarch64 (64-bit)  
-- **Operating System:** Debian GNU/Linux 13 (Trixie)  
-- **Version ID:** 13.1  
-- **Codename:** trixie  
-- **Vendor:** Debian  
-- **Platform:** Raspberry Pi (ARM Cortex-A72)  
-- **Build:** #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16)
+| Item | Value |
+|------|-------|
+| **Hostname** | TaylorsPi |
+| **Architecture** | ARM64 (aarch64) |
+| **Model** | Raspberry Pi 4 — Cortex-A72 × 4 @ 1.8 GHz |
+| **OS** | Debian GNU/Linux 13 (trixie) |
+| **Kernel** | Linux 6.12.47+rpt-rpi-v8 #1 SMP PREEMPT (2025-09-16) |
+| **User** | taylo |
+| **Machine ID** | bf2feb5960b7433bb846bcf6c14cf1a3 |
 
 ---
 
-## ⚙️ CPU Details
-- **Model:** ARM Cortex-A72 (r0p3)  
-- **Cores:** 4 (1 thread per core)  
-- **Clock Range:** 600 MHz – 1800 MHz  
-- **BogoMIPS:** 108.00  
-- **CPU Scaling:** 100%  
-- **Flags:** `fp`, `asimd`, `evtstrm`, `crc32`, `cpuid`  
-- **Caches:**  
-  - L1d: 128 KiB ×4  
-  - L1i: 192 KiB ×4  
-  - L2: 1 MiB  
-- **NUMA Nodes:** 2 (node0 CPUs 0–3, node1 CPUs 0–3)
+## ⚙️ CPU & Memory
+| Item | Value |
+|------|-------|
+| **Cores** | 4 (Cortex-A72) |
+| **CPU min MHz** | 600 |
+| **CPU max MHz** | 1800 |
+| **Total RAM** | 3.7 GiB |
+| **Available RAM** | ≈ 2.5 GiB |
+| **Swap (zram0)** | 2 GiB enabled |
 
 ---
 
-## 🧱 CPU Vulnerabilities / Mitigations
-| Vulnerability | Status |
-|----------------|--------|
-| Gather data sampling | Not affected |
-| Indirect target selection | Not affected |
-| Itlb multihit | Not affected |
-| L1tf | Not affected |
-| Mds | Not affected |
-| Meltdown | Not affected |
-| Speculative store bypass | **Vulnerable** |
-| Spectre v1 | Mitigated (__user pointer sanitization) |
-| Spectre v2 | **Vulnerable** |
-| Others | Not affected |
+## 💽 Storage / Boot
+| Device | Label | FSType | Mount Point | Size | Notes |
+|---------|--------|--------|-------------|------|-------|
+| `/dev/sda2` | `newroot` | ext4 | `/` | 79 G (13 used) | **Current root filesystem** |
+| `/dev/sdb1` | `bootfs` | vfat | `/boot/firmware` | 510 M (74 used) | Boot partition |
+| `/dev/sda1` | `My Passport` | ntfs3 | `/mnt/external` | 4.5 T (353 used) | External drive |
+| `/dev/mapper/veracrypt1` | — | exfat | `/mnt/secure` | 200 G (121 used) | Mounted VeraCrypt volume |
+| `/dev/zram0` | zram0 | swap | — | 2 G | Active swap |
+
+Root UUID → `3a8190c8-1598-41c0-b303-d1f807c93002`  
+Boot UUID → `1C94-4EC3`
 
 ---
 
-## 🧮 Memory
-| Type | Total | Used | Free | Shared | Buff/Cache | Available |
-|------|------|------|------|--------|-------------|-----------|
-| RAM  | 3.7 GiB | 572 MiB | 91 MiB | 20 MiB | 3.1 GiB | 3.1 GiB |
-| Swap | 2.0 GiB | 0B | 2.0 GiB | – | – | – |
+## 🧾 FSTAB
+```text
+proc            /proc           proc    defaults          0 0
+UUID=4355-12FC  /mnt/storage    vfat    defaults,uid=1000,gid=1000,umask=0002,nofail,x-systemd.device-timeout=10 0 0
+UUID=4A8C7C7B8C7C637D /mnt/external ntfs3 uid=1000,gid=1000,umask=002,defaults,nofail,x-systemd.automount 0 0
+UUID=3a8190c8-1598-41c0-b303-d1f807c93002 / ext4 defaults,noatime 0 1
+UUID=1C94-4EC3 /boot/firmware vfat defaults 0 2
 
----
+🔐 VeraCrypt
 
-## 💽 Storage Overview (`df -h`)
-| Filesystem | Size | Used | Avail | Use% | Mounted on |
-|-----------|------|------|-------|------|------------|
-| /dev/sda2 | 29G | 5.4G | 23G | 20% | `/` |
-| /dev/sda1 | 510M | 74M | 437M | 15% | `/boot/firmware` |
-| /dev/sdb1 | 4.6T | 353G | 4.3T | 8% | `/mnt/external` |
-| tmpfs | 1.9G | 8.4M | 1.9G | 1% | `/tmp` |
-| others | (various system mounts) | – | – | – | – |
+Container path: /mnt/external/My files.hc
 
----
+Mount point: /mnt/secure
 
-## 🧰 Block Devices (`lsblk`)
-| Device | Size | FSType | Label | Mountpoint |
-|-------|------|--------|-------|-----------|
-| **loop0** | 2G | swap | – | – |
-| **loop1** | 200G | – | – | – |
-| └─veracrypt1 | 200G | exfat | – | (mounts dynamically at `/mnt/secure`) |
-| **sda1** | 512M | vfat | bootfs | `/boot/firmware` |
-| **sda2** | 29.5G | ext4 | rootfs | `/` |
-| **sdb1** | 4.5T | ntfs | My Passport | `/mnt/external` |
-| **zram0** | 2G | swap | zram0 | [SWAP] |
+FSType: exfat (uid/gid 1000)
 
----
+Mount helper: /usr/bin/veracrypt
 
-## 🧾 Notes
-- The VeraCrypt container file lives on the **My Passport** drive:
-  `/mnt/external/My files.hc`
-  → When mounted, it appears at `/mnt/secure`.
+Service integration: restore-secure.service (one-shot at boot)
 
-- Root filesystem: 29 GB on internal storage (`/dev/sda2`)  
-- External storage: 4.5 TB NTFS volume (`My Passport`) used for Syncthing backups and encrypted container.  
-- Swap configured via both `loop0` and `zram0`.
+🗂️ Summary
 
----
+System upgraded to Debian 13 (trixie) on new 80 GB root partition (newroot).
 
-### 📦 Summary
-This Raspberry Pi runs Debian 13 (Trixie) on ARM64 architecture with a quad-core Cortex-A72 CPU, 4 GB RAM, and a large external NTFS drive for backups. It hosts services like Docker, Syncthing, and VeraCrypt, managed under the `taylo` user.
+Previous root (/dev/sdb2) retained but inactive.
+
+External 4.5 TB drive auto-mounts at /mnt/external.
+
+VeraCrypt container and mount paths unchanged.
+
+All Docker services running; Syncthing temporarily inactive.
